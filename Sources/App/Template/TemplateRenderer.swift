@@ -1,5 +1,5 @@
 //
-//  routes.swift
+//  TemplateRenderer.swift
 //
 //
 //  Created by Chad Rutherford on 1/17/24.
@@ -8,27 +8,25 @@
 import SwiftHtml
 import Vapor
 
-func routes(_ app: Application) throws {
-    app.get { req async in
-        "It works!"
+public struct TemplateRenderer {
+    var req: Request
+    
+    init(_ req: Request) {
+        self.req = req
     }
     
-    app.get("hello") { req -> Response in
+    public func renderHtml(
+        _ template: TemplateRepresentable,
+        minify: Bool = false,
+        indent: Int = 4
+    ) -> Response {
         let doc = Document(.html) {
-            Html {
-                Head {
-                    Title("Hello, World!")
-                }
-                
-                Body {
-                    H1("Hello, World!")
-                }
-            }
+            template.render(req)
         }
         
         let body = DocumentRenderer(
-            minify: false,
-            indent: 4
+            minify: minify,
+            indent: indent
         ).render(doc)
         
         return Response(
