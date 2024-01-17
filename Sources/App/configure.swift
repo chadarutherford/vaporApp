@@ -13,6 +13,8 @@ public func configure(_ app: Application) throws {
         FileMiddleware(publicDirectory: app.directory.publicDirectory)
     )
     
+    app.middleware.use(ExtendPathMiddleware())
+    
     let routers: [RouteCollection] = [
         WebRouter(),
         BlogRouter()
