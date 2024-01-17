@@ -8,35 +8,34 @@
 import SwiftHtml
 import Vapor
 
-func routes(_ app: Application) throws {
-    app.get { req async in
-        "It works!"
-    }
+struct MyTemplate: TemplateRepresentable {
+    let title: String
     
-    app.get("hello") { req -> Response in
-        let doc = Document(.html) {
-            Html {
-                Head {
-                    Title("Hello, World!")
-                }
-                
-                Body {
-                    H1("Hello, World!")
-                }
+    func render(_ req: Request) -> Tag {
+        Html {
+            Head {
+                Title(title)
+            }
+            
+            Body {
+                H1(title)
             }
         }
-        
-        let body = DocumentRenderer(
-            minify: false,
-            indent: 4
-        ).render(doc)
-        
-        return Response(
-            status: .ok,
-            headers: [
-                "Content-Type": "text/html; charset=utf-8"
-            ],
-            body: .init(string: body)
+    }
+}
+
+func routes(_ app: Application) throws {
+    app.routes.get { req -> Response in
+        req.templates.renderHtml(
+            WebIndexTemplate(
+                WebIndexContext(
+                    title: "Home",
+                    message: "Hi there, welcome to my page!")
+            )
         )
+    }
+    
+    app.routes.get("hello") { req -> Response in
+        req.templates.renderHtml(MyTemplate(title: "Hello, World!"))
     }
 }
