@@ -13,5 +13,12 @@ public func configure(_ app: Application) throws {
         FileMiddleware(publicDirectory: app.directory.publicDirectory)
     )
     
-    try routes(app)
+    let routers: [RouteCollection] = [
+        WebRouter(),
+        BlogRouter()
+    ]
+    
+    for router in routers {
+        try router.boot(routes: app.routes)
+    }
 }
